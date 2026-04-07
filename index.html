@@ -14,6 +14,7 @@
   --cream: #FFF8E7;
   --dark: #1A0800;
   --board-bg: #3D1C00;
+
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -133,14 +134,14 @@ body {
   -webkit-tap-highlight-color: transparent;
   transition: transform .12s ease;
   background:
-    radial-gradient(circle at 32% 26%, rgba(255,255,255,.05) 0%, rgba(255,255,255,.08) 38%, transparent 62%),
+    radial-gradient(circle at 32% 26%, rgba(255,255,255,.55) 0%, rgba(255,255,255,.08) 38%, transparent 62%),
     radial-gradient(circle at 65% 70%, rgba(255,255,255,.06) 0%, transparent 50%),
     radial-gradient(circle at 50% 50%, rgba(255,255,255,.04) 0%, rgba(200,180,140,.08) 60%, rgba(150,120,60,.12) 100%);
   box-shadow:
     0 4px 16px rgba(0,0,0,.45),
-    inset 0 -3px 8px rgba(0,0,0,.08),
-    inset 0 3px 10px rgba(255,255,255,.05),
-    0 0 0 1.5px rgba(255,255,255,.12),
+    inset 0 -3px 8px rgba(0,0,0,.18),
+    inset 0 3px 10px rgba(255,255,255,.35),
+    0 0 0 1.5px rgba(255,255,255,.22),
     0 0 0 2.5px rgba(200,160,80,.15);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
@@ -266,6 +267,11 @@ body {
     );
   border-radius: 50%;
   filter: none;
+  /* Reset — brick-breaking will override this */
+  background-image: none;
+  animation: none;
+  opacity: 1;
+  z-index: 1;
 }
 .cell.brick::after {
   content: '';
@@ -299,66 +305,12 @@ body {
 }
 @keyframes brick-hit {
   0%   { transform: scale(1); filter: brightness(1); }
-  25%  { transform: scale(1.12); filter: brightness(2); }
-  50%  { transform: scale(0.95); filter: brightness(1.3); }
+  25%  { transform: scale(1.12); filter: brightness(2.2); }
+  50%  { transform: scale(0.95); filter: brightness(1.4); }
   100% { transform: scale(1); filter: brightness(1); }
 }
 .cell.brick-hit { animation: brick-hit 0.35s ease forwards; }
 
-/* ── ICE CELLS ── */
-.cell.ice {
-  position: relative;
-}
-.cell.ice::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 30% 28%, rgba(180,230,255,.55) 0%, rgba(120,190,255,.25) 40%, transparent 65%),
-    radial-gradient(circle at 68% 70%, rgba(100,170,255,.12) 0%, transparent 50%),
-    rgba(160,210,255,.18);
-  box-shadow:
-    inset 0 0 0 2.5px rgba(160,220,255,.7),
-    inset 0 2px 8px rgba(200,240,255,.4),
-    0 0 12px rgba(100,180,255,.35),
-    0 0 24px rgba(80,160,255,.15);
-  pointer-events: none;
-}
-.cell.ice-2::after {
-  background:
-    radial-gradient(circle at 30% 28%, rgba(200,240,255,.7) 0%, rgba(140,200,255,.35) 40%, transparent 65%),
-    radial-gradient(circle at 68% 70%, rgba(120,190,255,.18) 0%, transparent 50%),
-    rgba(180,225,255,.28);
-  box-shadow:
-    inset 0 0 0 3px rgba(180,235,255,.9),
-    inset 0 2px 10px rgba(220,245,255,.6),
-    0 0 16px rgba(100,190,255,.55),
-    0 0 32px rgba(80,160,255,.25);
-  animation: ice-shimmer 2s ease-in-out infinite alternate;
-}
-@keyframes ice-shimmer {
-  from { box-shadow: inset 0 0 0 3px rgba(180,235,255,.8), inset 0 2px 10px rgba(220,245,255,.5), 0 0 14px rgba(100,190,255,.45), 0 0 28px rgba(80,160,255,.2); }
-  to   { box-shadow: inset 0 0 0 3.5px rgba(210,250,255,1), inset 0 2px 14px rgba(230,250,255,.8), 0 0 22px rgba(130,210,255,.75), 0 0 40px rgba(100,180,255,.35); }
-}
-/* crack on ice-1 */
-.cell.ice-1::after {
-  background:
-    linear-gradient(55deg, transparent 46%, rgba(200,240,255,.5) 47.5%, transparent 49%),
-    linear-gradient(130deg, transparent 42%, rgba(200,240,255,.4) 43.5%, transparent 45%),
-    radial-gradient(circle at 30% 28%, rgba(180,230,255,.45) 0%, rgba(120,190,255,.18) 40%, transparent 65%),
-    rgba(160,210,255,.12);
-  box-shadow:
-    inset 0 0 0 2px rgba(160,220,255,.5),
-    0 0 8px rgba(100,180,255,.25);
-}
-@keyframes ice-break {
-  0%   { transform: scale(1); filter: brightness(1); }
-  20%  { transform: scale(1.1); filter: brightness(1.8) hue-rotate(20deg); }
-  60%  { transform: scale(0.97); filter: brightness(1.2); }
-  100% { transform: scale(1); filter: brightness(1); }
-}
-.cell.ice-hit { animation: ice-break 0.38s ease forwards; }
 
 /* ── OBSTACLE INDICATOR (corner badge) ── */
 .cell.brick .obstacle-badge,
@@ -654,6 +606,67 @@ body {
 .stat.free-move { border-color:rgba(255,200,0,.7); background:rgba(255,200,0,.14); }
 .stat.free-move .stat-label { color:rgba(255,220,100,.8); }
 .stat.free-move .stat-val { color:#FFE566; }
+
+/* ── OBSTACLE SPRITE DIV ── */
+.obs-sprite {
+
+  position: absolute;
+
+  inset: 8px;   /* 明顯縮小 */
+  inset: -22px;  /* 負值 = 超出格子邊框 */
+  border-radius: 80%;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  z-index: 5;
+  overflow: hidden;
+
+}
+/* bubble.webp: 693x434, 3 cols x 2 rows → frame=231x217
+   background-size 300% 200% makes one frame fill the element
+   col positions: 0%=col0, 50%=col1, 100%=col2
+   row positions: 0%=row0(intact), 100%=row1(shatter) */
+.obs-sprite.ice-2 {
+  background-image: url('assets/ArtRes/Texture/bubble.webp');
+  background-size: 300% 200%;
+  background-position: 0% 0%;
+  animation: ice-pulse 2s ease-in-out infinite alternate;
+}
+.obs-sprite.ice-1 {
+  background-image: url('assets/ArtRes/Texture/bubble.webp');
+  background-size: 300% 200%;
+  background-position: 50% 0%;
+  opacity: .9;
+}
+@keyframes ice-pulse {
+  from { opacity: .82; }
+  to   { opacity: 1; filter: brightness(1.1); }
+}
+@keyframes ice-hit-anim {
+  0%   { background-position: 0%   100%; opacity: 1; }
+  33%  { background-position: 50%  100%; opacity: 1; }
+  66%  { background-position: 100% 100%; opacity: .7; }
+  100% { background-position: 100% 100%; opacity: 0; }
+}
+.obs-sprite.ice-hit {
+  background-image: url('assets/ArtRes/Texture/bubble.webp');
+  background-size: 300% 200%;
+  animation: ice-hit-anim 0.4s steps(1,end) forwards !important;
+}
+/* fx_Stone2.webp: 256x88, 3 cols x 1 row → frame≈85x88
+   background-size 300% 100% makes one frame fill element */
+.obs-sprite.brick-breaking {
+
+  background-image: url('assets/ArtRes/Texture/bubble.webp');
+  background-size: 300% 100%;
+  background-position: 0% 0%;
+  animation: stone-break-anim 0.45s steps(1,end) forwards;
+}
+@keyframes stone-break-anim {
+  0%   { background-position: 0%   0%; opacity: 1; }
+  33%  { background-position: 50%  0%; opacity: 1; }
+  66%  { background-position: 100% 0%; opacity: .8; }
+  100% { background-position: 100% 0%; opacity: 0; }
+}
 </style>
 </head>
 <body>
@@ -756,6 +769,23 @@ const LEVELS=[
 // Powerup type enum — use PW.ROW instead of magic string 'row'
 const PW = Object.freeze({ROW:'row', COL:'col', BOMB:'bomb', COLOR:'color'});
 const PW_EMOJI = {[PW.ROW]:'✨',[PW.COL]:'✨',[PW.BOMB]:'💥',[PW.COLOR]:'🌀'};
+
+// ── SPRITE SHEETS (base64 embedded) ──
+// bubble.webp  : 693×434, 3 cols × 2 rows, frame=231×217
+//   Row 0 = ice intact frames (L→R: full, cracking, cracked)
+//   Row 1 = ice breaking frames (L→R: shatter1, shatter2, shatter3)
+// fx_Stone2.webp: 256×88, 3 cols × 1 row, frame≈85×88
+//   Col 0=intact, Col 1=breaking, Col 2=shattered
+const SPRITE = Object.freeze({
+  BUBBLE_URI: 'assets/ArtRes/Texture/bubble.webp',
+  STONE_URI:  'assets/ArtRes/Texture/fx_Stone2.webp',
+  BUBBLE_W: 693, BUBBLE_H: 434,
+  BUBBLE_COLS: 3, BUBBLE_ROWS: 2,
+  BUBBLE_FW: 231, BUBBLE_FH: 217,
+  STONE_W: 256,  STONE_H: 88,
+  STONE_COLS: 3, STONE_ROWS: 1,
+  STONE_FW: 85,  STONE_FH: 88,
+});
 
 // All animation timing in one place — tweak here, affects everything
 const TIMING = Object.freeze({
@@ -964,8 +994,7 @@ function applyCellContent(el, tile){
   const pwClasses = ['pw-row','pw-col','pw-bomb','pw-color'];
   const obsClasses = ['brick','brick-2','brick-1','ice','ice-2','ice-1'];
   el.classList.remove(...pwClasses,...obsClasses,'popping');
-  // Remove any existing badge
-  el.querySelectorAll('.obstacle-badge').forEach(b=>b.remove());
+  el.querySelectorAll('.obstacle-badge,.obs-sprite').forEach(b=>b.remove());
 
   if(!tile){ el.textContent=''; el.dataset.type=''; return; }
 
@@ -974,15 +1003,14 @@ function applyCellContent(el, tile){
     el.textContent='';
     el.dataset.type='brick';
     el.classList.add('brick', tile.hp===2?'brick-2':'brick-1');
-    // HP badge
     const badge=document.createElement('span');
     badge.className='obstacle-badge';
-    badge.textContent=tile.hp==='2'||tile.hp===2?'🧱':'💢';
+    badge.textContent=tile.hp===2?'🧱':'💢';
     el.appendChild(badge);
     return;
   }
 
-  // ── ICE (tile underneath is still matchable after thaw) ──
+  // ── Normal / Ice tile ──
   el.dataset.type = tile.t;
   if(tile.pw){
     el.textContent = PW_EMOJI[tile.pw];
@@ -990,8 +1018,14 @@ function applyCellContent(el, tile){
   } else {
     el.textContent = tile.t>=0 ? EMOJIS[tile.t] : '';
   }
+
   if(tile.obs==='ice'){
-    el.classList.add('ice', tile.hp===2?'ice-2':'ice-1');
+    el.classList.add('ice');
+    // Inject sprite div — sits on top of emoji, fills entire cell
+    const sprite=document.createElement('div');
+    sprite.className='obs-sprite '+(tile.hp===2?'ice-2':'ice-1');
+    el.appendChild(sprite);
+    // Badge
     const badge=document.createElement('span');
     badge.className='obstacle-badge';
     badge.textContent=tile.hp===2?'❄️':'🌊';
@@ -1449,19 +1483,49 @@ function damageAdjacentObstacles(removedSet){
       // Play hit animation
       const el=getCell(nr,nc);
       if(el){
-        el.classList.remove('brick-hit','ice-hit');
-        void el.offsetWidth;
-        el.classList.add(tile.obs==='brick'?'brick-hit':'ice-hit');
-        setTimeout(()=>el.classList.remove('brick-hit','ice-hit'),400);
+        if(tile.obs==='ice'){
+          // Animate the sprite div
+          const sprite=el.querySelector('.obs-sprite');
+          if(sprite){
+            sprite.classList.remove('ice-2','ice-1','ice-hit');
+            void sprite.offsetWidth;
+            sprite.classList.add('ice-hit');
+            setTimeout(()=>sprite.classList.remove('ice-hit'),420);
+          }
+        } else {
+          el.classList.remove('brick-hit');
+          void el.offsetWidth;
+          el.classList.add('brick-hit');
+          setTimeout(()=>el.classList.remove('brick-hit'),380);
+        }
       }
 
       tile.hp--;
-      if(tile.hp<=0){
-        if(tile.obs==='brick'){
-          // Brick fully destroyed — becomes null (gravity fills it)
-          spawnObstacleBreakBurst(nr,nc,'brick');
-          state.board[nr][nc]=null;
-        } else if(tile.obs==='ice'){
+if(tile.hp<=0){
+  if(tile.obs==='brick'){
+    spawnObstacleBreakBurst(nr,nc,'brick');
+    if(el){
+      const rect=el.getBoundingClientRect();
+      const stoneSprite=document.createElement('div');
+      stoneSprite.style.cssText=`
+        position:fixed;
+        left:${rect.left-8}px;
+        top:${rect.top-8}px;
+        width:${rect.width+16}px;
+        height:${rect.height+16}px;
+        pointer-events:none;
+        z-index:600;
+        background-repeat:no-repeat;
+        background-size:300% 100%;
+        background-position:0% 0%;
+        animation:stone-break-anim 0.45s steps(1,end) forwards;
+        background-image:url('
+      `;
+      document.body.appendChild(stoneSprite);
+      setTimeout(()=>stoneSprite.remove(),500);
+    }
+    state.board[nr][nc]=null;
+  } else if(tile.obs==='ice'){
           // Ice thawed — tile becomes a normal matchable cell
           spawnObstacleBreakBurst(nr,nc,'ice');
           tile.obs=null; tile.hp=0;
@@ -1484,6 +1548,7 @@ function spawnObstacleBreakBurst(r,c,type){
   const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
   const color=type==='brick'?'#C8820A':'#88CCFF';
   spawnBurst(cx,cy,color,14);
+
 }
 
 // ── GRAVITY ──
@@ -2054,6 +2119,8 @@ function tickConfetti(){
 
 
 document.getElementById('hintBtn').addEventListener('click',showHint);
+
+// Sprite paths defined directly in CSS
 
 // ── GUIDE BUTTON GLOW ──
 function updateGuideBtnGlow(){
