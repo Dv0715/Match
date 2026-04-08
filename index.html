@@ -143,8 +143,7 @@ body {
     inset 0 3px 10px rgba(255,255,255,.35),
     0 0 0 1.5px rgba(255,255,255,.22),
     0 0 0 2.5px rgba(200,160,80,.15);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+
 }
 
 /* top-left glare spot */
@@ -170,7 +169,7 @@ body {
   pointer-events:none;
 }
 
-.cell:hover { transform: scale(1.1); filter: brightness(1.1); }
+.cell:hover { transform: scale(1.1); }
 .cell:active { transform: scale(.94); }
 
 .cell.selected {
@@ -789,6 +788,8 @@ body {
 </div>
 
 <script>
+
+
 // ── CONSTANTS ──
 const EMOJIS  = ['🏛️','🍺','🔪','🎋','🐠','🏮','💣'];
 const BCOLORS = ['#E84040','#E8A020','#4A90D9','#5CB85C','#D45FB0','#8B5CF6','#2ABFBF'];
@@ -896,6 +897,7 @@ window.addEventListener('resize',resizeCvs);
 const MAX_PARTICLES = 400;
 
 function spawnBurst(x,y,color,count=18){
+  count = Math.round(count * BURST_COUNT_SCALE); // ← 加這行
   if(particles.length >= MAX_PARTICLES) return; // cap for mobile perf
   count = Math.min(count, MAX_PARTICLES - particles.length);
   for(let i=0;i<count;i++){
@@ -1672,7 +1674,8 @@ function applyGravity(){
     });
   }
   setTimeout(()=>{
-    document.querySelectorAll('.cell').forEach(el=>{
+      cellEls.flat().forEach(el=>{
+    if(!el) return;
       el.style.transition='';el.style.transform='';el.style.opacity='';
       el.classList.remove('popping','dropping');
     });
@@ -2012,6 +2015,12 @@ function spawnRibbonBurst(cx,cy,count=60){
 
 // ── LAUNCH ──
 function launchConfetti(){
+    if(IS_MOBILE){
+    // 手機用輕量版慶祝
+    playCelebrationSound();
+    showComboToast(99);
+    return;
+  }
   confActive=true;
   confetti=[];
   const W=confCvs.width, H=confCvs.height;
