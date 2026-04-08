@@ -241,8 +241,8 @@ body {
 
 /* ── BRICK CELLS ── */
 .cell.brick {
-  background:
-    linear-gradient(135deg, #6B4C2A 0%, #4A3018 40%, #3A2410 100%);
+  background: #3A2410;
+  border-radius: 10px !important;  /* 方形，覆蓋 .cell 的 50% */
   border: none;
   box-shadow:
     inset 2px 2px 4px rgba(255,200,120,.15),
@@ -256,6 +256,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
+  display: none !important;
   background:
     repeating-linear-gradient(
       0deg, transparent 0px, transparent 8px,
@@ -277,6 +278,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
+  display: none !important;
   background: rgba(0,0,0,.0);
   border-radius: 50%;
   filter: none;
@@ -665,6 +667,27 @@ body {
   background-size: 300% 200%;
   animation: ice-hit-anim 0.4s steps(1,end) forwards !important;
 }
+
+/* 磚塊存活狀態：Col 0=完整, Col 1=裂縫 */
+.obs-sprite.brick-hp2,
+.obs-sprite.brick-hp1 {
+  inset: -22px !important;
+  top: -21px !important;    /* 比 -22px 小 → 往下移 */
+  left: -31px !important;   /* 比 -22px 大 → 往左移 */
+  border-radius: 8px;
+  overflow: hidden;
+}
+.obs-sprite.brick-hp2 {
+  background-image: url('assets/ArtRes/Texture/fx_Stone2.webp');
+  background-size: 300% 125%;
+  background-position: 0% 0%;
+}
+.obs-sprite.brick-hp1 {
+  background-image: url('assets/ArtRes/Texture/fx_Stone2.webp');
+  background-size: 300% 125%;
+  background-position: 0% 0%;
+}
+
 /* fx_Stone2.webp: 256x88, 3 cols x 1 row → frame≈85x88
    background-size 300% 100% makes one frame fill element */
 .obs-sprite.brick-breaking {
@@ -1010,17 +1033,17 @@ function applyCellContent(el, tile){
 
   if(!tile){ el.textContent=''; el.dataset.type=''; return; }
 
-  // ── BRICK ──
-  if(tile.obs==='brick'){
-    el.textContent='';
-    el.dataset.type='brick';
-    el.classList.add('brick', tile.hp===2?'brick-2':'brick-1');
-    const badge=document.createElement('span');
-    badge.className='obstacle-badge';
-    badge.textContent=tile.hp===2?'🧱':'💢';
-    el.appendChild(badge);
-    return;
-  }
+// ── BRICK ──
+if(tile.obs==='brick'){
+  el.textContent='';
+  el.dataset.type='brick';
+  el.classList.add('brick');
+  // 用 fx_Stone2.webp 顯示磚塊外觀
+  const sprite=document.createElement('div');
+  sprite.className='obs-sprite brick-intact '+(tile.hp===2?'brick-hp2':'brick-hp1');
+  el.appendChild(sprite);
+  return;
+}
 
   // ── Normal / Ice tile ──
   el.dataset.type = tile.t;
