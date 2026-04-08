@@ -607,6 +607,19 @@ body {
 .stat.free-move .stat-label { color:rgba(255,220,100,.8); }
 .stat.free-move .stat-val { color:#FFE566; }
 
+/* ── ICE CELL — hide base bubble, show only sprite ── */
+.cell.ice {
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.cell.ice::before,
+.cell.ice::after {
+  display: none !important;
+}
+
+
 /* ── OBSTACLE SPRITE DIV ── */
 .obs-sprite {
 
@@ -655,8 +668,7 @@ body {
 /* fx_Stone2.webp: 256x88, 3 cols x 1 row → frame≈85x88
    background-size 300% 100% makes one frame fill element */
 .obs-sprite.brick-breaking {
-
-  background-image: url('assets/ArtRes/Texture/bubble.webp');
+  background-image: url('assets/ArtRes/Texture/fx_Stone2.webp');
   background-size: 300% 100%;
   background-position: 0% 0%;
   animation: stone-break-anim 0.45s steps(1,end) forwards;
@@ -1149,7 +1161,7 @@ function onPointerUp(e){
   if(!pointerMoved){onClick(r,c);}
   else{
     const target=getTargetFromDelta(r,c,dx,dy);
-    if(target){selected=null;trySwap(r,c,target.r,target.c);}
+    if(target){state.selected=null;trySwap(r,c,target.r,target.c);}
     else{state.selected=null;render();}
   }
   dragStart=null;pointerMoved=false;previewSwapped=false;
@@ -1183,9 +1195,9 @@ function cleanDrag(){
 function onClick(r,c){
   if(state.animating||!state.board[r][c])return;
   resetIdleTimer();
-  if(!selected){selected={r,c};render();return;}
-  if(selected.r===r&&selected.c===c){selected=null;render();return;}
-  const dr=Math.abs(r-selected.r),dc=Math.abs(c-selected.c);
+  if(!state.selected){state.selected={r,c};render();return;}
+  if(state.selected.r===r&&state.selected.c===c){state.selected=null;render();return;}
+  const dr=Math.abs(r-state.selected.r),dc=Math.abs(c-state.selected.c);
   if((dr===1&&dc===0)||(dr===0&&dc===1)){trySwap(state.selected.r,state.selected.c,r,c);}
   else{state.selected={r,c};render();}
 }
@@ -1519,7 +1531,7 @@ if(tile.hp<=0){
         background-size:300% 100%;
         background-position:0% 0%;
         animation:stone-break-anim 0.45s steps(1,end) forwards;
-        background-image:url('
+        background-image:url(assets/ArtRes/Texture/fx_Stone2.webp);
       `;
       document.body.appendChild(stoneSprite);
       setTimeout(()=>stoneSprite.remove(),500);
