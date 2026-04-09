@@ -1410,13 +1410,13 @@ async function runCascade(){
     playComboNote(state.comboChain-1);
     vibrate(Math.min(state.comboChain * 6, 40)); // scale haptics with combo
     // Board pulse on combo chain >= 2
-    if(state.comboChain>=2){
-      const bi=document.getElementById('board');
-      bi.classList.remove('combo-pulse');
-      void bi.offsetWidth;
-      bi.classList.add('combo-pulse');
-      setTimeout(()=>bi.classList.remove('combo-pulse'),350);
-    }
+if(state.comboChain>=2 && !IS_MOBILE){
+  const bi=document.getElementById('board');
+  bi.classList.remove('combo-pulse');
+  void bi.offsetWidth;
+  bi.classList.add('combo-pulse');
+  setTimeout(()=>bi.classList.remove('combo-pulse'),350);
+}
 
     // Analyse for powerup creation
     const analysis=analyseMatches(matches);
@@ -1437,7 +1437,7 @@ async function runCascade(){
       el.classList.add('popping');
       const rect=el.getBoundingClientRect();
       spawnBurst(rect.left+rect.width/2,rect.top+rect.height/2,BCOLORS[state.board[r][c]?.t??0],
-        matches.length>=5?30:matches.length>=4?24:18);
+  IS_MOBILE?8:matches.length>=5?30:matches.length>=4?24:18);
     });
     playPopSound();
 
@@ -1830,7 +1830,7 @@ function checkState(){
 }
 
 function shuffleBoard(){
-  const cells=document.querySelectorAll('.cell');
+  const cells=cellEls.flat().filter(Boolean);
   cells.forEach(el=>{el.style.transition='opacity 0.25s';el.style.opacity='0';});
   setTimeout(()=>{
     shuffleData();
@@ -1840,7 +1840,14 @@ function shuffleBoard(){
     toast.textContent='版面重整中… 🔀';
     document.body.appendChild(toast);setTimeout(()=>toast.remove(),1600);
     cells.forEach(el=>{el.style.opacity='1';});
-    setTimeout(()=>cells.forEach(el=>{el.style.transition='';el.style.opacity='';}),300);
+    setTimeout(()=>{
+      cells.forEach(el=>{el.style.transition='';el.style.opacity='';});
+      // 洗完後檢查是否有連線，有的話自動消除
+      if(findMatches().length>0){
+        state.animating=true;
+        runCascade();
+      }
+    },350);
   },260);
 }
 
