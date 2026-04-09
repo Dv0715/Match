@@ -626,8 +626,9 @@ body {
 
   position: absolute;
 
-  inset: 8px;   /* 明顯縮小 */
-  inset: -22px;  /* 負值 = 超出格子邊框 */
+  inset: -40px !important;
+  top: -40px !important;
+  left: -40px !important;
   border-radius: 80%;
   pointer-events: none;
   background-repeat: no-repeat;
@@ -640,15 +641,15 @@ body {
    col positions: 0%=col0, 50%=col1, 100%=col2
    row positions: 0%=row0(intact), 100%=row1(shatter) */
 .obs-sprite.ice-2 {
-  background-image: url('assets/ArtRes/Texture/bubble.webp');
-  background-size: 300% 200%;
+  background-image: url('assets/ArtRes/Texture/ice.webp');
+  background-size: 200% 100%;
   background-position: 0% 0%;
   animation: ice-pulse 2s ease-in-out infinite alternate;
 }
 .obs-sprite.ice-1 {
-  background-image: url('assets/ArtRes/Texture/bubble.webp');
-  background-size: 300% 200%;
-  background-position: 50% 0%;
+  background-image: url('assets/ArtRes/Texture/ice.webp');
+  background-size: 200% 100%;
+  background-position: 100% 0%;
   opacity: .9;
 }
 @keyframes ice-pulse {
@@ -656,41 +657,41 @@ body {
   to   { opacity: 1; filter: brightness(1.1); }
 }
 @keyframes ice-hit-anim {
-  0%   { background-position: 0%   100%; opacity: 1; }
-  33%  { background-position: 50%  100%; opacity: 1; }
-  66%  { background-position: 100% 100%; opacity: .7; }
-  100% { background-position: 100% 100%; opacity: 0; }
+  0%   { background-position: 0%   0%; opacity: 1; }
+  33%  { background-position: 50%  0%; opacity: 1; }
+  66%  { background-position: 100% 0%; opacity: .7; }
+  100% { background-position: 100% 0%; opacity: 0; }
 }
 .obs-sprite.ice-hit {
-  background-image: url('assets/ArtRes/Texture/bubble.webp');
-  background-size: 300% 200%;
+  background-image: url('assets/ArtRes/Texture/fx_ice.webp');
+  background-size: 300% 100%;
   animation: ice-hit-anim 0.4s steps(1,end) forwards !important;
 }
 
 /* 磚塊存活狀態：Col 0=完整, Col 1=裂縫 */
 .obs-sprite.brick-hp2,
 .obs-sprite.brick-hp1 {
-  inset: -22px !important;
-  top: -21px !important;    /* 比 -22px 小 → 往下移 */
-  left: -31px !important;   /* 比 -22px 大 → 往左移 */
+  inset: -40px !important;
+  top: -40px !important;    /* 比 -22px 小 → 往下移 */
+  left: -40px !important;   /* 比 -22px 大 → 往左移 */
   border-radius: 8px;
   overflow: hidden;
 }
 .obs-sprite.brick-hp2 {
-  background-image: url('assets/ArtRes/Texture/fx_Stone2.webp');
-  background-size: 300% 125%;
+  background-image: url('assets/ArtRes/Texture/rock.webp');
+  background-size: 200% 100%;
   background-position: 0% 0%;
 }
 .obs-sprite.brick-hp1 {
-  background-image: url('assets/ArtRes/Texture/fx_Stone2.webp');
-  background-size: 300% 125%;
-  background-position: 0% 0%;
+  background-image: url('assets/ArtRes/Texture/rock.webp');
+  background-size: 200% 100%;
+  background-position: 100% 0%;
 }
 
 /* fx_Stone2.webp: 256x88, 3 cols x 1 row → frame≈85x88
    background-size 300% 100% makes one frame fill element */
 .obs-sprite.brick-breaking {
-  background-image: url('assets/ArtRes/Texture/fx_Stone2.webp');
+  background-image: url('assets/ArtRes/Texture/fx_rock.webp');
   background-size: 300% 100%;
   background-position: 0% 0%;
   animation: stone-break-anim 0.45s steps(1,end) forwards;
@@ -1560,7 +1561,7 @@ if(tile.hp<=0){
         background-size:300% 100%;
         background-position:0% 0%;
         animation:stone-break-anim 0.45s steps(1,end) forwards;
-        background-image:url(assets/ArtRes/Texture/fx_Stone2.webp);
+        background-image:url(assets/ArtRes/Texture/fx_rock.webp);
       `;
       document.body.appendChild(stoneSprite);
       setTimeout(()=>stoneSprite.remove(),500);
