@@ -154,7 +154,8 @@ body {
   width:38%; height:26%;
   background: rgba(255,255,255,.58);
   border-radius:50%;
-  filter:blur(2.5px);
+  filter: none; /* 手機拿掉 blur，改用透明度模擬 */
+  opacity: 0.6;
   pointer-events:none;
 }
 /* bottom shadow arc */
@@ -165,7 +166,8 @@ body {
   width:56%; height:18%;
   background: rgba(0,0,0,.22);
   border-radius:50%;
-  filter:blur(3px);
+  filter: none;
+  opacity: 0.25;
   pointer-events:none;
 }
 
@@ -830,8 +832,8 @@ const SPRITE = Object.freeze({
 
 // All animation timing in one place — tweak here, affects everything
 const TIMING = Object.freeze({
-  POP:   370,   // ms — bubble pop animation
-  DROP:  460,   // ms — gravity settle
+  POP:   IS_MOBILE ? 300 : 370,
+  DROP:  IS_MOBILE ? 360 : 460,
   SHAKE: 480,   // ms — invalid swap shake
   HINT:  1600,  // ms — hint glow duration
   IDLE:  5000,  // ms — idle before auto-hint
@@ -1036,7 +1038,9 @@ function applyCellContent(el, tile){
   const pwClasses = ['pw-row','pw-col','pw-bomb','pw-color'];
   const obsClasses = ['brick','brick-2','brick-1','ice','ice-2','ice-1'];
   el.classList.remove(...pwClasses,...obsClasses,'popping');
-  el.querySelectorAll('.obstacle-badge,.obs-sprite').forEach(b=>b.remove());
+  // 只在有子元素時才清除，避免無謂的 DOM 操作
+  if(el.children.length>0)
+    el.querySelectorAll('.obstacle-badge,.obs-sprite').forEach(b=>b.remove());
 
   if(!tile){ el.textContent=''; el.dataset.type=''; return; }
 
@@ -1406,7 +1410,8 @@ async function runCascade(){
     const pwCells=collectTriggeredPowerups(matches);
     if(matches.length===0&&pwCells.length===0)break;
 
-    state.comboChain++;comboChain=state.comboChain;
+    state.comboChain++;
+const comboChain=state.comboChain;
     playComboNote(state.comboChain-1);
     vibrate(Math.min(state.comboChain * 6, 40)); // scale haptics with combo
     // Board pulse on combo chain >= 2
@@ -1637,18 +1642,19 @@ function applyGravity(){
     }
 
     // Animate survivors dropping (find their new positions by matching tile refs)
-    survivors.forEach((s)=>{
-      const fromRow=s.fromRow;
-      // Find where this tile landed
-      let toRow=-1;
-      for(let r=0;r<ROWS;r++){
-        if(state.board[r][c]===s.tile){toRow=r;break;}
-      }
-      if(toRow<0)return;
-      const el=getCell(toRow,c);
-      if(!el)return;
+survivors.forEach((s)=>{
+  const fromRow=s.fromRow;
+  let toRow=-1;
+  for(let r=0;r<ROWS;r++){
+    if(state.board[r][c]===s.tile){toRow=r;break;}
+  }
+  if(toRow<0)return;
+  const el=getCell(toRow,c);
+  if(!el)return;
+  el.style.willChange = 'transform';  
       const tile=state.board[toRow][c];
       el.classList.remove('popping','pw-row','pw-col','pw-bomb','pw-color');
+      if(tile?.obs==='brick') return; // 磚塊不動，跳過
       applyCellContent(el,tile);
       el.style.opacity='1';
       if(fromRow===toRow){
@@ -1678,13 +1684,16 @@ function applyGravity(){
       el.style.opacity='1';el.style.transform='translateY(0)';
     });
   }
-  setTimeout(()=>{
-      cellEls.flat().forEach(el=>{
+setTimeout(()=>{
+  cellEls.flat().forEach(el=>{
     if(!el) return;
-      el.style.transition='';el.style.transform='';el.style.opacity='';
-      el.classList.remove('popping','dropping');
-    });
-  },530);
+    el.style.transition='';
+    el.style.transform='';
+    el.style.opacity='';
+    el.style.willChange=''; // ← 加這行
+    el.classList.remove('popping','dropping');
+  });
+},530);
 }
 
 // ── VALID MOVE CHECK ──
