@@ -623,6 +623,26 @@ body {
   display: none !important;
 }
 
+/* ── ICON SPRITE SHEET ── */
+/* ICON_00.webp: 840×120, 7 cols × 1 row, 每格 120×120 */
+/* 順序：0=高粱酒 1=風獅爺 2=菜刀 3=貢糖 4=廣東粥 5=一條根 6=燒餅 */
+.cell-icon {
+  position: absolute;
+  inset: 0;
+  background-image: url('assets/ArtRes/Texture/ICON_00.webp');
+  background-size: 700% 100%;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 1;
+}
+.cell-icon[data-i="0"] { background-position: 0%      0%; }
+.cell-icon[data-i="1"] { background-position: 16.67%  0%; }
+.cell-icon[data-i="2"] { background-position: 33.33%  0%; }
+.cell-icon[data-i="3"] { background-position: 50%     0%; }
+.cell-icon[data-i="4"] { background-position: 66.67%  0%; }
+.cell-icon[data-i="5"] { background-position: 83.33%  0%; }
+.cell-icon[data-i="6"] { background-position: 100%    0%; }
+
 
 /* ── OBSTACLE SPRITE DIV ── */
 .obs-sprite {
@@ -729,13 +749,13 @@ body {
 </div>
 
 <div class="legend">
-  <div class="leg"><span>🏛️</span>風獅爺</div>
   <div class="leg"><span>🍺</span>高粱酒</div>
+  <div class="leg"><span>🏛️</span>風獅爺</div>
   <div class="leg"><span>🔪</span>菜刀</div>
   <div class="leg"><span>🎋</span>貢糖</div>
-  <div class="leg"><span>🐠</span>一夜干</div>
-  <div class="leg"><span>🏮</span>燈樓</div>
-  <div class="leg"><span>💣</span>砲彈</div>
+  <div class="leg"><span>🥣</span>廣東粥</div>
+  <div class="leg"><span>🌿</span>一條根</div>
+  <div class="leg"><span>🫓</span>燒餅</div>
 </div>
 
 <div class="board-wrap">
@@ -799,8 +819,16 @@ const BURST_COUNT_SCALE = IS_MOBILE ? 0.35 : 1.0;
 
 
 // ── CONSTANTS ──
-const EMOJIS  = ['🏛️','🍺','🔪','🎋','🐠','🏮','💣'];
-const BCOLORS = ['#E84040','#E8A020','#4A90D9','#5CB85C','#D45FB0','#8B5CF6','#2ABFBF'];
+const EMOJIS  = [0,1,2,3,4,5,6]; // 改用數字索引，CSS 負責顯示圖片
+const BCOLORS = [
+  '#E8A020', // 0 高粱酒 → 金黃
+  '#E84040', // 1 風獅爺 → 紅
+  '#4A90D9', // 2 菜刀   → 藍灰
+  '#5CB85C', // 3 貢糖   → 綠
+  '#FF8C42', // 4 廣東粥 → 橘
+  '#8B5CF6', // 5 一條根 → 紫
+  '#D4A853', // 6 燒餅   → 棕金
+];
 const COLS=7, ROWS=7;
 const LEVELS=[
   {name:'金城鎮', target:500,  moves:20, bricks:0,  ices:0 },
@@ -1067,8 +1095,14 @@ if(tile.obs==='brick'){
   if(tile.pw){
     el.textContent = PW_EMOJI[tile.pw];
     el.classList.add('pw-'+tile.pw);
+  } else if(tile.t >= 0){
+    el.textContent = '';
+    const icon = document.createElement('div');
+    icon.className = 'cell-icon';
+    icon.dataset.i = tile.t;
+    el.appendChild(icon);
   } else {
-    el.textContent = tile.t>=0 ? EMOJIS[tile.t] : '';
+    el.textContent = '';
   }
 
   if(tile.obs==='ice'){
