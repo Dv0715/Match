@@ -109,6 +109,7 @@ body {
   gap: 5px;
   position: relative;
   transition: transform 0.15s cubic-bezier(.34,1.56,.64,1);
+  touch-action: none;
 }
 .board-inner.combo-pulse {
   animation: board-pulse 0.32s cubic-bezier(.34,1.56,.64,1) forwards;
@@ -955,6 +956,11 @@ function tickParticles(){
   rafId=particles.length>0?requestAnimationFrame(tickParticles):null;
 }
 
+// 鎖定棋盤區域的觸控滾動
+document.getElementById('board').addEventListener('touchmove', e => {
+  e.preventDefault();
+}, { passive: false });
+
 // ── BOARD INIT ──
 function init(){
   state.score=0;state.moves=lv().moves;state.selected=null;state.animating=false;state.comboChain=0;syncState();
@@ -1113,6 +1119,7 @@ let previewSwapped=false; // for magnetic snap
 function onPointerDown(e,r,c){
   if(state.animating||!state.board[r][c])return;
   e.preventDefault();
+  e.stopPropagation();
   dragStart={r,c,x:e.clientX,y:e.clientY};
   pointerMoved=false;previewSwapped=false;
   const srcEl=getCell(r,c);
