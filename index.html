@@ -788,6 +788,10 @@ body {
 </div>
 
 <script>
+// 偵測手機，降低特效品質
+const IS_MOBILE = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+const MAX_PARTICLES = IS_MOBILE ? 80 : 400;
+const BURST_COUNT_SCALE = IS_MOBILE ? 0.35 : 1.0;
 
 
 // ── CONSTANTS ──
@@ -894,7 +898,7 @@ function resizeCvs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight;}
 resizeCvs();
 window.addEventListener('resize',resizeCvs);
 
-const MAX_PARTICLES = 400;
+
 
 function spawnBurst(x,y,color,count=18){
   count = Math.round(count * BURST_COUNT_SCALE); // ← 加這行
