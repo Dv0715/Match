@@ -20,7 +20,9 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-  background: radial-gradient(ellipse at top, #2A0A00 0%, #0D0400 70%);
+  background: 
+    url('assets/ArtRes/Texture/BG.webp') center center / cover no-repeat fixed,
+    radial-gradient(ellipse at top, #2A0A00 0%, #0D0400 70%);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -65,9 +67,9 @@ body {
 }
 .stat {
   flex: 1;
-  background: rgba(255,215,0,.07);
-  border: 1px solid rgba(255,215,0,.25);
-  border-radius: 14px;
+  background: url('assets/ArtRes/Texture/btn.webp') center center / 100% 100% no-repeat;
+  border: none;
+  border-radius: 0;
   padding: 7px 10px;
   text-align: center;
 }
@@ -491,16 +493,21 @@ body {
 
 .level-label { font-size:.65rem; color:rgba(255,240,200,.35); letter-spacing:.15em; text-align:center; padding-bottom:4px; }
 .hint-btn {
-  background:transparent;
-  border:1px solid rgba(255,215,0,.3);
-  color:rgba(255,240,200,.45);
-  padding:5px 18px; border-radius:20px;
-  font-size:.7rem; cursor:pointer; margin:6px;
-  font-family:'Noto Serif TC',serif;
-  transition:all .2s;
+  background: url('assets/ArtRes/Texture/btn2.webp') center center / 100% 100% no-repeat;
+  border: none;
+  color: rgba(255,240,200,.45);
+  padding: 5px 18px;
+  border-radius: 20px;
+  font-size: .7rem;
+  cursor: pointer;
+  margin: 6px;
+  font-family: 'Noto Serif TC', serif;
+  transition: all .2s;
 }
-.hint-btn:hover { border-color:var(--gold); color:var(--gold); }
-
+.hint-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
 .hint-btn.pw-available {
   border-color: rgba(255,200,0,.8);
   color: var(--gold);
@@ -748,7 +755,7 @@ body {
 </div>
 
 <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
-  <button class="hint-btn" id="hintBtn">💡 提示</button>
+  <button class="hint-btn" id="hintBtn" style="background-image: url('assets/ArtRes/Texture/btn3.webp');">💡 提示</button>
   <button class="hint-btn" id="guideBtn" style="padding:5px 12px;">✨ 道具說明</button>
 </div>
 <div class="level-label" id="levelLabel">第一關 · 金城鎮</div>
